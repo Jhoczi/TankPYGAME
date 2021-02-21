@@ -1,4 +1,5 @@
 ﻿import pygame
+from menu import *
 
 class Game():
     def __init__(self):
@@ -17,19 +18,23 @@ class Game():
         self.font_name = 'Fonts/tank.ttf'     
         self.BLACK = (0,0,0)
         self.WHITE = (255,255,255)
-
+        self.mainMenu = MainMenu(self)
+        self.options = OptionsMenu(self)
+        self.credits = CreditsMenu(self)
+        self.currentMenu = self.mainMenu
         pygame.display.set_caption("Tank Game")
-        self.clock = pygame.time.Clock()
         
     def UpdateEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.start = False
                 self.play = False
+                self.currentMenu.run_display = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.start = False
                     self.play = False
+                    self.currentMenu.run_display = False
                 if event.key == pygame.K_RETURN:
                     self.START_KEY = True
                 if event.key == pygame.K_BACKSPACE:
