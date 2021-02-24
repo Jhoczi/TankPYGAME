@@ -1,23 +1,33 @@
 ﻿import pygame
+from State.state import *
 
-
-class Menu():
+class Menu(State):
     def __init__(self, game):
-        self.game = game
+        State.__init__(self,game)
         self.mid_w = self.game.DISPLAY_WIDTH / 2
         self.mid_h = self.game.DISPLAY_HEIGHT / 2
-        self.run_display = True
         self.cursor_rect = pygame.Rect(0, 0, 20, 20)
         self.offset = -100
 
     def DrawCursor(self):
         self.game.DrawText('*', 30, self.cursor_rect.x, self.cursor_rect.y + 5)
-
     def BlitScreen(self):
         self.game.window.blit(self.game.display, (0, 0))
         pygame.display.update()
-        self.game.ResetKeys()
-
+        self.ResetKeys()
+        #self.game.ResetKeys()
+    @abstractmethod
+    def DisplayState(self):
+        pass
+    @abstractmethod
+    def UpdateStateEvents(self):
+        pass
+    @abstractmethod
+    def Update(self):
+        pass
+    @abstractmethod
+    def RenderState(self):
+        pass
 
 class MainMenu(Menu):
     def __init__(self, game):
@@ -30,6 +40,26 @@ class MainMenu(Menu):
         self.credits_X = self.mid_w
         self.credits_Y = self.mid_h + 100
         self.cursor_rect.midtop = (self.start_X + self.offset, self.start_Y)
+    def DisplayState(self):
+        print("jestem w main state")
+        while self.runDisplay:
+            self.Update()
+            self.RenderState()
+            #self.game.UpdateEvents()
+            self.CheckInput()
+            self.game.display.fill(self.game.BLACK)
+            self.game.DrawText('Main Menu', 48, self.mid_w, self.mid_h - 100)
+            self.game.DrawText('Start Game', 38, self.mid_w, self.start_Y)
+            self.game.DrawText('Options', 38, self.mid_w, self.options_Y)
+            self.game.DrawText('Credits', 38, self.mid_w, self.credits_Y)
+            self.DrawCursor()
+            self.BlitScreen()
+    def UpdateStateEvents(self):
+        pass
+    def Update(self):
+        pass
+    def RenderState(self):
+        pass
 
     def MoveCursor(self):
         if self.game.DOWN_KEY:
@@ -79,6 +109,18 @@ class MainMenu(Menu):
 
 
 class OptionsMenu(Menu):
+    def DisplayState(self):
+        pass
+
+    def UpdateStateEvents(self):
+        pass
+
+    def Update(self):
+        pass
+
+    def RenderState(self):
+        pass
+
     def __init__(self, game):
         Menu.__init__(self, game)
         self.state = 'Volume'
@@ -116,6 +158,18 @@ class OptionsMenu(Menu):
             self.BlitScreen()
             
 class CreditsMenu(Menu):
+    def DisplayState(self):
+        pass
+
+    def UpdateStateEvents(self):
+        pass
+
+    def Update(self):
+        pass
+
+    def RenderState(self):
+        pass
+
     def __init__(self,game):
         Menu.__init__(self,game)
         
