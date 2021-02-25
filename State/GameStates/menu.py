@@ -14,7 +14,6 @@ class Menu(State):
         self.game.window.blit(self.game.display, (0, 0))
         pygame.display.update()
         self.ResetKeys()
-        #self.game.ResetKeys()
     @abstractmethod
     def DisplayState(self):
         pass
@@ -31,7 +30,7 @@ class Menu(State):
 class MainMenu(Menu):
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.state = "Start"
+        self.state = 'Start'
         self.start_X = self.mid_w
         self.start_Y = self.mid_h
         self.options_X = self.mid_w
@@ -61,10 +60,10 @@ class MainMenu(Menu):
                 self.cursor_rect.midtop = (self.options_X + self.offset, self.options_Y)
                 self.state = 'Options'
     def CheckInput(self):
-        self.MoveCursor()
         if self.game.START_KEY:
             if self.state == 'Start':
                 self.game.play = True
+                self.game.AddState(self.game.options)
             elif self.state == 'Options':
                 self.game.currentMenu = self.game.options
             elif self.state == 'Credits':
@@ -78,7 +77,7 @@ class MainMenu(Menu):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.runDisplay = False
-                    self.game.ChangeState(self.game.stateGroup[1])
+                    self.game.ChangeState()
                 if event.key == pygame.K_RETURN:
                     self.game.START_KEY = True
                 if event.key == pygame.K_BACKSPACE:
@@ -87,13 +86,11 @@ class MainMenu(Menu):
                     self.game.DOWN_KEY = True
                 if event.key == pygame.K_UP:
                     self.game.UP_KEY = True
-                if event.key == pygame.K_q:
-                    self.game.Q_KEY = True
-                    self.game.currentMenu = self.game.endState
     def Update(self):
         self.UpdateStateEvents()
         self.CheckInput()
         self.MoveCursor()
+        self.ResetKeys()
     def RenderState(self):
         self.game.display.fill(self.game.BLACK)
         self.game.DrawText('Main Menu', 48, self.mid_w, self.mid_h - 100)

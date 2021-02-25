@@ -1,7 +1,6 @@
-﻿import pygame, time
-from menu import *
-from GameStates.EndState import EndState
-from State import *
+﻿import pygame
+from State.GameStates.menu import *
+from State.GameStates.endstate import *
 
 class Game():
     def __init__(self):
@@ -15,7 +14,6 @@ class Game():
         self.DOWN_KEY = False
         self.START_KEY = False
         self.BACK_KEY = False
-        self.Q_KEY = False
         self.display = pygame.Surface((self.DISPLAY_WIDTH,self.DISPLAY_HEIGHT))
         self.window = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT))
         self.font_name = 'Fonts/tank.ttf'
@@ -26,14 +24,19 @@ class Game():
         self.credits = CreditsMenu(self)
         self.endState = EndState(self)
         self.stateGroup = []
-        self.currentState = self.mainMenu
-
+        self.currentState = self.endState
     def InitGameSettings(self):
         pygame.display.set_caption("Tank Game")
-        self.stateGroup.append(self.mainMenu)
         self.stateGroup.append(self.endState)
-    def ChangeState(self,state):
-        self.currentState = state
+        self.stateGroup.append(self.mainMenu)
+        self.currentState = self.stateGroup[self.stateGroup.count(self.stateGroup)-1]
+    def ChangeState(self):
+        self.stateGroup.pop()
+        self.currentState = self.stateGroup[self.stateGroup.count(self.stateGroup)-1]
+    def AddState(self,state):
+        self.stateGroup.append(state)
+        self.currentState = self.stateGroup[self.stateGroup.count(self.stateGroup)-1]
+    """
     def UpdateEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -56,7 +59,7 @@ class Game():
                 if event.key == pygame.K_q:
                     self.Q_KEY = True
                     self.currentState = self.endState
-
+    """
     def DrawText(self, text, size, x,y):
         font = pygame.font.Font(self.font_name,size)
         text_surface = font.render(text, True, self.WHITE)
@@ -64,10 +67,9 @@ class Game():
         text_rect.center = (x,y)
         self.display.blit(text_surface,text_rect)
     def Update(self):
-        self.UpdateEvents()
+        #self.UpdateEvents()
         pygame.display.update()
-
-        #self.clock.tick(self.FPS)
+        #self.clock.tick(self.FPS) <- DELTA TIME HERE
         self.currentState.ResetKeys()
     def Render(self):
         self.display.fill(self.BLACK)
@@ -77,6 +79,4 @@ class Game():
         while self.start:
             self.currentState.DisplayState()
             self.Update()
-            if self.START_KEY:
-                self.active = False
             self.Render()

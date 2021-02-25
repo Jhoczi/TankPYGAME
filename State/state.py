@@ -2,7 +2,6 @@
 import game
 from abc import abstractmethod, ABC
 
-
 class State(ABC):
     def __init__(self,game):
         self.game = game
