@@ -17,7 +17,8 @@ class EndState(State):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.runDisplay = False
-                    self.game.currentState = self.game.mainMenu
+                    self.game.start = False
+                    #self.game.currentState = self.game.mainMenu
                 if event.key == pygame.K_RETURN:
                     self.game.START_KEY = True
                 if event.key == pygame.K_BACKSPACE:

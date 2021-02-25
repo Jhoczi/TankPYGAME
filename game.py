@@ -26,13 +26,14 @@ class Game():
         self.credits = CreditsMenu(self)
         self.endState = EndState(self)
         self.stateGroup = []
-        #self.currentMenu = self.mainMenu
-        self.currentState = self.endState
+        self.currentState = self.mainMenu
 
     def InitGameSettings(self):
         pygame.display.set_caption("Tank Game")
         self.stateGroup.append(self.mainMenu)
-
+        self.stateGroup.append(self.endState)
+    def ChangeState(self,state):
+        self.currentState = state
     def UpdateEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -74,8 +75,8 @@ class Game():
     def Run(self):
         self.InitGameSettings()
         while self.start:
-            self.stateGroup[0].DisplayState()
-            #self.Update()
+            self.currentState.DisplayState()
+            self.Update()
             if self.START_KEY:
                 self.active = False
             self.Render()

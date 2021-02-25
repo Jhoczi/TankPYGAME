@@ -8,7 +8,6 @@ class Menu(State):
         self.mid_h = self.game.DISPLAY_HEIGHT / 2
         self.cursor_rect = pygame.Rect(0, 0, 20, 20)
         self.offset = -100
-
     def DrawCursor(self):
         self.game.DrawText('*', 30, self.cursor_rect.x, self.cursor_rect.y + 5)
     def BlitScreen(self):
@@ -40,27 +39,6 @@ class MainMenu(Menu):
         self.credits_X = self.mid_w
         self.credits_Y = self.mid_h + 100
         self.cursor_rect.midtop = (self.start_X + self.offset, self.start_Y)
-    def DisplayState(self):
-        print("jestem w main state")
-        while self.runDisplay:
-            self.Update()
-            self.RenderState()
-            #self.game.UpdateEvents()
-            self.CheckInput()
-            self.game.display.fill(self.game.BLACK)
-            self.game.DrawText('Main Menu', 48, self.mid_w, self.mid_h - 100)
-            self.game.DrawText('Start Game', 38, self.mid_w, self.start_Y)
-            self.game.DrawText('Options', 38, self.mid_w, self.options_Y)
-            self.game.DrawText('Credits', 38, self.mid_w, self.credits_Y)
-            self.DrawCursor()
-            self.BlitScreen()
-    def UpdateStateEvents(self):
-        pass
-    def Update(self):
-        pass
-    def RenderState(self):
-        pass
-
     def MoveCursor(self):
         if self.game.DOWN_KEY:
             if self.state == 'Start':
@@ -82,7 +60,6 @@ class MainMenu(Menu):
             elif self.state == 'Credits':
                 self.cursor_rect.midtop = (self.options_X + self.offset, self.options_Y)
                 self.state = 'Options'
-
     def CheckInput(self):
         self.MoveCursor()
         if self.game.START_KEY:
@@ -93,20 +70,46 @@ class MainMenu(Menu):
             elif self.state == 'Credits':
                 self.game.currentMenu = self.game.credits
             self.run_display = False
-
-    def DisplayMenu(self):
-        self.run_display = True
-        while self.run_display:
-            self.game.UpdateEvents()
+    def UpdateStateEvents(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.runDisplay = False
+                self.game.start = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.runDisplay = False
+                    self.game.ChangeState(self.game.stateGroup[1])
+                if event.key == pygame.K_RETURN:
+                    self.game.START_KEY = True
+                if event.key == pygame.K_BACKSPACE:
+                    self.game.BACK_KEY = True
+                if event.key == pygame.K_DOWN:
+                    self.game.DOWN_KEY = True
+                if event.key == pygame.K_UP:
+                    self.game.UP_KEY = True
+                if event.key == pygame.K_q:
+                    self.game.Q_KEY = True
+                    self.game.currentMenu = self.game.endState
+    def Update(self):
+        self.UpdateStateEvents()
+        self.CheckInput()
+        self.MoveCursor()
+    def RenderState(self):
+        self.game.display.fill(self.game.BLACK)
+        self.game.DrawText('Main Menu', 48, self.mid_w, self.mid_h - 100)
+        self.game.DrawText('Start Game', 38, self.mid_w, self.start_Y)
+        self.game.DrawText('Options', 38, self.mid_w, self.options_Y)
+        self.game.DrawText('Credits', 38, self.mid_w, self.credits_Y)
+        self.DrawCursor()
+        self.BlitScreen()
+    def DisplayState(self):
+        print("jestem w main state")
+        while self.runDisplay:
+            self.Update()
+            self.RenderState()
+            #self.game.UpdateEvents()
             self.CheckInput()
-            self.game.display.fill(self.game.BLACK)
-            self.game.DrawText('Main Menu', 48, self.mid_w, self.mid_h - 100)
-            self.game.DrawText('Start Game', 38, self.mid_w, self.start_Y)
-            self.game.DrawText('Options', 38, self.mid_w, self.options_Y)
-            self.game.DrawText('Credits', 38, self.mid_w, self.credits_Y)
-            self.DrawCursor()
-            self.BlitScreen()
-
+            self.RenderState()
 
 class OptionsMenu(Menu):
     def DisplayState(self):
