@@ -6,9 +6,6 @@ class State(ABC):
     def __init__(self,game):
         self.game = game
         self.runDisplay = True
-    @abstractmethod
-    def DisplayState(self):
-        pass
     def ResetKeys(self):
         self.game.UP_KEY = False
         self.game.DOWN_KEY = False
@@ -23,4 +20,7 @@ class State(ABC):
         pass
     @abstractmethod
     def RenderState(self):
+        pass
+    @abstractmethod
+    def DisplayState(self):
         pass

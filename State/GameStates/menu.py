@@ -14,17 +14,31 @@ class Menu(State):
         self.game.window.blit(self.game.display, (0, 0))
         pygame.display.update()
         self.ResetKeys()
-    @abstractmethod
-    def DisplayState(self):
-        pass
-    @abstractmethod
     def UpdateStateEvents(self):
-        pass
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.runDisplay = False
+                self.game.start = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.runDisplay = False
+                    self.game.ChangeState()
+                if event.key == pygame.K_RETURN:
+                    self.game.START_KEY = True
+                if event.key == pygame.K_BACKSPACE:
+                    self.game.BACK_KEY = True
+                if event.key == pygame.K_DOWN:
+                    self.game.DOWN_KEY = True
+                if event.key == pygame.K_UP:
+                    self.game.UP_KEY = True
     @abstractmethod
     def Update(self):
         pass
     @abstractmethod
     def RenderState(self):
+        pass
+    @abstractmethod
+    def DisplayState(self):
         pass
 
 class MainMenu(Menu):
@@ -62,30 +76,15 @@ class MainMenu(Menu):
     def CheckInput(self):
         if self.game.START_KEY:
             if self.state == 'Start':
-                self.game.play = True
-                self.game.AddState(self.game.options)
+                print("odpalam giere")
             elif self.state == 'Options':
-                self.game.currentMenu = self.game.options
-            elif self.state == 'Credits':
-                self.game.currentMenu = self.game.credits
-            self.run_display = False
-    def UpdateStateEvents(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+                print('odpalam opcje')
+                self.game.AddState(self.game.options)
                 self.runDisplay = False
-                self.game.start = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.runDisplay = False
-                    self.game.ChangeState()
-                if event.key == pygame.K_RETURN:
-                    self.game.START_KEY = True
-                if event.key == pygame.K_BACKSPACE:
-                    self.game.BACK_KEY = True
-                if event.key == pygame.K_DOWN:
-                    self.game.DOWN_KEY = True
-                if event.key == pygame.K_UP:
-                    self.game.UP_KEY = True
+                #self.game.ChangeState()
+            elif self.state == 'Credits':
+                self.game.AddState(self.game.credits)
+                self.runDisplay = False
     def Update(self):
         self.UpdateStateEvents()
         self.CheckInput()
@@ -104,84 +103,122 @@ class MainMenu(Menu):
         while self.runDisplay:
             self.Update()
             self.RenderState()
-            #self.game.UpdateEvents()
-            self.CheckInput()
-            self.RenderState()
 
 class OptionsMenu(Menu):
-    def DisplayState(self):
-        pass
-
-    def UpdateStateEvents(self):
-        pass
-
-    def Update(self):
-        pass
-
-    def RenderState(self):
-        pass
-
     def __init__(self, game):
         Menu.__init__(self, game)
-        self.state = 'Volume'
+        self.state = 'Graphic'
+        self.graphicX = self.mid_w
+        self.graphicY = self.mid_h + 30
         self.volumeX = self.mid_w
-        self.volumeY = self.mid_h + 30
+        self.volumeY = self.mid_h + 70
         self.controlsX = self.mid_w
-        self.controlsY = self.mid_h + 70
-        self.cursor_rect.midtop = (self.volumeX + self.offset, self.volumeY)
-
+        self.controlsY = self.mid_h + 110
+        self.cursor_rect.midtop = (self.graphicX + self.offset, self.graphicY)
+    def MoveCursor(self):
+        if self.game.DOWN_KEY:
+            if self.state == 'Graphic':
+                self.cursor_rect.midtop = (self.graphicX + self.offset, self.graphicY)
+                #self.state = 'Volume'
+            elif self.state == 'Volume':
+                self.cursor_rect.midtop = (self.volumeX + self.offset, self.volumeY)
+                #self.state = 'Controls'
+            elif self.state == 'Controls':
+                self.cursor_rect.midtop = (self.controlsX + self.offset, self.controlsY)
+                #self.state = 'Graphic'
+        elif self.game.UP_KEY:
+            if self.state == 'Graphic':
+                self.cursor_rect.midtop = (self.graphicX + self.offset, self.graphicY)
+                #self.state = 'Controls'
+            elif self.state == 'Volume':
+                self.cursor_rect.midtop = (self.volumeX + self.offset, self.volumeY)
+                #self.state = 'Graphic'
+            elif self.state == 'Controls':
+                self.cursor_rect.midtop = (self.controlsX + self.offset, self.controlsY)
+                #self.state = 'Volume'
     def CheckInput(self):
         if self.game.BACK_KEY:
-            self.game.currentMenu = self.game.mainMenu
-            self.run_display = False
-        elif self.game.UP_KEY or self.game.DOWN_KEY:
-            if self.state == 'Volume':
+            print('wciskam backspace')
+            self.runDisplay = False
+            self.game.ChangeState()          
+        elif self.game.DOWN_KEY:
+            if self.state == 'Graphic':
+                self.state = 'Volume'
+                #self.cursor_rect.midtop = (self.controlsX + self.offset, self.controlsY)
+            elif self.state == 'Volume':
                 self.state = 'Controls'
-                self.cursor_rect.midtop = (self.controlsX + self.offset, self.controlsY)
+                #self.cursor_rect.midtop = (self.volumeX + self.offset, self.volumeY)
+            elif self.state == 'Controls':
+                self.state = 'Graphic'
+        elif self.game.UP_KEY:
+            if self.state == 'Graphic':
+                self.state = 'Controls'
+                #self.cursor_rect.midtop = (self.controlsX + self.offset, self.controlsY)
+            elif self.state == 'Volume':
+                self.state = 'Graphic'
+                #self.cursor_rect.midtop = (self.volumeX + self.offset, self.volumeY)
             elif self.state == 'Controls':
                 self.state = 'Volume'
-                self.cursor_rect.midtop = (self.volumeX + self.offset, self.volumeY)
         elif self.game.START_KEY:
             # TODO: Create a functionaliyty of Volume Menu and Controls Menu
             pass
-
-    def DisplayMenu(self):
-        self.run_display = True
-        while self.run_display:
-            self.game.UpdateEvents()
-            self.CheckInput()
-            self.game.display.fill(self.game.BLACK)
-            self.game.DrawText('Options', 48, self.mid_w, self.mid_h - 100)
-            self.game.DrawText('Volume', 38, self.volumeX, self.volumeY)
-            self.game.DrawText('Controls', 38, self.controlsX, self.controlsY)
-            self.DrawCursor()
-            self.BlitScreen()
-            
-class CreditsMenu(Menu):
-    def DisplayState(self):
-        pass
-
-    def UpdateStateEvents(self):
-        pass
-
     def Update(self):
-        pass
-
+        self.UpdateStateEvents()
+        self.CheckInput()
+        self.MoveCursor()
+        self.ResetKeys()
     def RenderState(self):
-        pass
+        self.game.display.fill(self.game.BLACK)
+        self.game.DrawText('Options', 48, self.mid_w, self.mid_h - 100)
+        self.game.DrawText('Graphic', 38, self.graphicX, self.graphicY)
+        self.game.DrawText('Volume', 38, self.volumeX, self.volumeY)
+        self.game.DrawText('Controls', 38, self.controlsX, self.controlsY)
+        self.DrawCursor()
+        self.BlitScreen()
+    def DisplayState(self):
+        self.runDisplay = True
+        while self.runDisplay:
+            self.Update()
+            self.RenderState()
 
+class CreditsMenu(Menu):
     def __init__(self,game):
         Menu.__init__(self,game)
-        
+
+    def CheckInput(self):
+        if self.game.BACK_KEY:
+            print('wciskam backspace')
+            self.runDisplay = False
+            self.game.ChangeState()
+
+    def Update(self):
+        self.UpdateStateEvents()
+        self.CheckInput()
+        self.ResetKeys()
+
+    def RenderState(self):
+        self.game.display.fill(self.game.BLACK)
+        self.game.DrawText('Credits',48,self.game.DISPLAY_WIDTH / 2, self.game.DISPLAY_HEIGHT / 2 - 100)
+        self.game.DrawText('Author - Jakub Hoczek',38,self.game.DISPLAY_WIDTH / 2, self.game.DISPLAY_HEIGHT / 2 + 10)
+        self.game.DrawText('Great thanks for Christian Duenas',38,self.game.DISPLAY_WIDTH / 2, self.game.DISPLAY_HEIGHT / 2 + 50)
+        self.BlitScreen()
+
+    def DisplayState(self):
+        self.runDisplay = True
+        while self.runDisplay:
+            self.Update()
+            self.RenderState()
+
     def DisplayMenu(self):
-        self.run_display = True
+        #self.run_display = True
         while self.run_display:
-            self.game.UpdateEvents()
+            self.Update()
+            self.RenderState() 
             if self.game.START_KEY or self.game.BACK_KEY:
                 self.game.currentMenu = self.game.mainMenu
                 self.run_display = False
-            self.game.display.fill(self.game.BLACK)
-            self.game.DrawText('Credits',48,self.game.DISPLAY_WIDTH / 2, self.game.DISPLAY_HEIGHT / 2 - 100)
-            self.game.DrawText('Author - Jakub Hoczek',38,self.game.DISPLAY_WIDTH / 2, self.game.DISPLAY_HEIGHT / 2 + 10)
-            self.game.DrawText('Great thanks for Christian Duenas',38,self.game.DISPLAY_WIDTH / 2, self.game.DISPLAY_HEIGHT / 2 + 50)
-            self.BlitScreen()
+            #self.game.display.fill(self.game.BLACK)
+            #self.game.DrawText('Credits',48,self.game.DISPLAY_WIDTH / 2, self.game.DISPLAY_HEIGHT / 2 - 100)
+            #self.game.DrawText('Author - Jakub Hoczek',38,self.game.DISPLAY_WIDTH / 2, self.game.DISPLAY_HEIGHT / 2 + 10)
+            #self.game.DrawText('Great thanks for Christian Duenas',38,self.game.DISPLAY_WIDTH / 2, self.game.DISPLAY_HEIGHT / 2 + 50)
+            #self.BlitScreen()

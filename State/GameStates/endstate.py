@@ -10,15 +10,12 @@ class EndState(State):
     def UpdateStateEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                #self.game.start = False
-                #self.game.play = False
                 self.runDisplay = False
                 self.game.start = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.runDisplay = False
                     self.game.start = False
-                    #self.game.currentState = self.game.mainMenu
                 if event.key == pygame.K_RETURN:
                     self.game.START_KEY = True
                 if event.key == pygame.K_BACKSPACE:

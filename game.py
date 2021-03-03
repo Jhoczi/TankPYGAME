@@ -33,6 +33,7 @@ class Game():
     def ChangeState(self):
         self.stateGroup.pop()
         self.currentState = self.stateGroup[self.stateGroup.count(self.stateGroup)-1]
+        self.currentState.runDisplay = True
     def AddState(self,state):
         self.stateGroup.append(state)
         self.currentState = self.stateGroup[self.stateGroup.count(self.stateGroup)-1]
