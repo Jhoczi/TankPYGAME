@@ -1,6 +1,7 @@
 ﻿import pygame
 from State.GameStates.menu import *
 from State.GameStates.endstate import *
+from State.GameStates.gamestate import *
 
 class Game():
     def __init__(self):
@@ -19,6 +20,8 @@ class Game():
         self.font_name = 'Fonts/tank.ttf'
         self.BLACK = (0,0,0)
         self.WHITE = (255,255,255)
+        self.RED = (255,0,0)
+        self.gameState = GameState(self)
         self.mainMenu = MainMenu(self)
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)

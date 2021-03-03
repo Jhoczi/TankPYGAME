@@ -77,6 +77,8 @@ class MainMenu(Menu):
         if self.game.START_KEY:
             if self.state == 'Start':
                 print("odpalam giere")
+                self.game.AddState(self.game.gameState)
+                self.runDisplay = False
             elif self.state == 'Options':
                 print('odpalam opcje')
                 self.game.AddState(self.game.options)
@@ -140,7 +142,7 @@ class OptionsMenu(Menu):
         if self.game.BACK_KEY:
             print('wciskam backspace')
             self.runDisplay = False
-            self.game.ChangeState()          
+            self.game.ChangeState()
         elif self.game.DOWN_KEY:
             if self.state == 'Graphic':
                 self.state = 'Volume'
