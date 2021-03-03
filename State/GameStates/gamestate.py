@@ -35,6 +35,7 @@ class GameState(State):
         self.CheckInput()
     def RenderState(self):
         self.game.display.fill(self.game.RED)
+        self.game.display.blit(self.game.player.entityImage,(0,0))
         self.BlitScreen()
     def DisplayState(self):
         self.runDisplay = True

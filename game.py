@@ -2,6 +2,7 @@
 from State.GameStates.menu import *
 from State.GameStates.endstate import *
 from State.GameStates.gamestate import *
+from Entity.entity import  *
 
 class Game():
     def __init__(self):
@@ -26,6 +27,7 @@ class Game():
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
         self.endState = EndState(self)
+        self.player = Tank(self,'Assets/tank1_32x32.png')
         self.stateGroup = []
         self.currentState = self.endState
     def InitGameSettings(self):
@@ -77,6 +79,7 @@ class Game():
         self.currentState.ResetKeys()
     def Render(self):
         self.display.fill(self.BLACK)
+        self.player.DisplayObject()
         self.window.blit(self.display, (0,0))
     def Run(self):
         self.InitGameSettings()
