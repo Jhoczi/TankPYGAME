@@ -1,9 +1,11 @@
 ﻿from State.state import *
+from Entity.player import *
 
 class GameState(State):
     def __init__(self,game):
         super().__init__(game)
-
+        self.playerSpriteSRC = 'Assets/tank1_32x32.png'
+        self.player = Player(self.playerSpriteSRC,self.game)
     def BlitScreen(self):
         self.game.window.blit(self.game.display, (0, 0))
         pygame.display.update()
@@ -33,9 +35,10 @@ class GameState(State):
     def Update(self):
         self.UpdateStateEvents()
         self.CheckInput()
+        self.player.Update()
     def RenderState(self):
         self.game.display.fill(self.game.RED)
-        self.game.display.blit(self.game.player.entityImage,(0,0))
+        self.game.display.blit(self.player.entityImage,(self.player.positionX,self.player.positionY))
         self.BlitScreen()
     def DisplayState(self):
         self.runDisplay = True
