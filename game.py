@@ -2,14 +2,16 @@
 from State.GameStates.menu import *
 from State.GameStates.endstate import *
 from State.GameStates.gamestate import *
-from Entity.entity import  *
+from Entity.entity import *
+from Entity.player import *
 
 class Game():
     def __init__(self):
         pygame.init()
-        self.__FPS = 30
-        self.DISPLAY_WIDTH = 640
-        self.DISPLAY_HEIGHT = 420
+        self.FPS = 30
+        self.clock = pygame.time.Clock()
+        self.DISPLAY_WIDTH = 800
+        self.DISPLAY_HEIGHT = 640
         self.start = True
         self.active = False
         self.UP_KEY = False
@@ -18,6 +20,7 @@ class Game():
         self.BACK_KEY = False
         self.display = pygame.Surface((self.DISPLAY_WIDTH,self.DISPLAY_HEIGHT))
         self.window = pygame.display.set_mode((self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT))
+        self.tileSize = 32
         self.font_name = 'Fonts/tank.ttf'
         self.BLACK = (0,0,0)
         self.WHITE = (255,255,255)
@@ -27,7 +30,6 @@ class Game():
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
         self.endState = EndState(self)
-        self.player = Tank(self,'Assets/tank1_32x32.png')
         self.stateGroup = []
         self.currentState = self.endState
     def InitGameSettings(self):
@@ -75,15 +77,14 @@ class Game():
     def Update(self):
         #self.UpdateEvents()
         pygame.display.update()
-        #self.clock.tick(self.FPS) <- DELTA TIME HERE
+        self.clock.tick(self.FPS) #<- DELTA TIME HERE
         self.currentState.ResetKeys()
     def Render(self):
-        self.display.fill(self.BLACK)
-        self.player.DisplayObject()
+        #self.display.fill(self.BLACK)
+        self.currentState.DisplayState()
         self.window.blit(self.display, (0,0))
     def Run(self):
         self.InitGameSettings()
         while self.start:
-            self.currentState.DisplayState()
             self.Update()
             self.Render()

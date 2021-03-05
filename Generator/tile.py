@@ -1,0 +1,10 @@
+﻿import pygame
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, imageSRC,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(imageSRC)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+    def Draw(self,surface):
+        surface.blit(self.image,(self.rect.x,self.rect.y))
