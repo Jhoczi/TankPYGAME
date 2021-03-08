@@ -1,5 +1,6 @@
 ﻿import pygame
 from Generator.button import *
+import csv
 pygame.init()
 
 #gamewindow
@@ -13,13 +14,14 @@ clock = pygame.time.Clock()
 currentTile = 0
 TILESIZE = 32
 ROWS = (SCREEN_WIDTH - LOWER_MARGIN) // TILESIZE
-COLS = 150
+COLS = 30
 GROUNDTILETYPES = 9
 # define game variables
 scrollLeft = False
 scrollRight = False
 scroll = 0
 scrollSpeed = 1
+level = 0
 
 screen = pygame.display.set_mode([SCREEN_WIDTH + SIDE_MARGIN,SCREEN_HEIGHT + LOWER_MARGIN])
 pygame.display.set_caption("TANK Level Editor")
@@ -37,7 +39,9 @@ g7_img = pygame.image.load('Assets/ground7.png').convert_alpha()
 g8_img = pygame.image.load('Assets/ground8.png').convert_alpha()
 g9_img = pygame.image.load('Assets/ground9.png').convert_alpha()
 platfrom_img = pygame.image.load('Assets/platform.png').convert_alpha()
-
+# load button img
+saveButtonImg = pygame.image.load('img/saveButton.png').convert_alpha()
+loadButtonImg = pygame.image.load('img/loadButton.png').convert_alpha()
 # store tiles in a list
 imgList = []
 for i in range(GROUNDTILETYPES):
@@ -51,6 +55,11 @@ GREEN = (144,201,120)
 WHITE = (255,255,255)
 RED = (200,25,25)
 ORANGE = (255,183,74)
+LIGHTDARK = (52,52,52)
+BLACK = (0,0,0)
+
+#define font:
+font = pygame.font.Font('Fonts/tank.ttf',30)
 
 # create empty tile list
 worldData = []
@@ -62,11 +71,15 @@ for row in range(ROWS):
 for tile in range(0,COLS):
     worldData[ROWS - 1][tile] = 0
     
-print(worldData)
+#print(worldData)
+# function for outputting text onto the screen
+def DrawText(text,font,text_col,x,y):
+    text_surface = font.render(text, True, text_col)
+    screen.blit(text_surface,(x,y))
 
 # function for drawing background:
 def DrawBackground():
-    screen.fill(GREEN)
+    screen.fill(BLACK)
     #widthG1 = g1_img.get_width()
     #screen.blit(g1_img,((widthG1 + 128) - scroll * 0.5,0))
     """
@@ -96,6 +109,9 @@ def DrawWorld():
                 
 
 # create buttons
+saveButton = Button(0.15 * SCREEN_WIDTH, SCREEN_HEIGHT + LOWER_MARGIN - 50, saveButtonImg, 0.35)
+loadButton = Button(0.15 * SCREEN_WIDTH + 75, SCREEN_HEIGHT + LOWER_MARGIN - 50, loadButtonImg, 0.35)
+# button list
 buttonList = []
 buttonCol = 0
 buttonRow = 0
@@ -112,7 +128,7 @@ while run:
     # scroll the map
     if scrollLeft == True and scroll > 0:
         scroll -= 5 * scrollSpeed
-    if scrollRight == True:
+    if scrollRight == True and scroll < (COLS * TILESIZE) - SCREEN_WIDTH:
         scroll += 5 * scrollSpeed
 
     # add new tiles to the screen
@@ -134,6 +150,10 @@ while run:
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                level += 1
+            if event.key == pygame.K_DOWN and level > 0:
+                level -= 1
             if event.key == pygame.K_LEFT:
                 scrollLeft = True
             if event.key == pygame.K_RIGHT:
@@ -150,8 +170,26 @@ while run:
     DrawBackground()
     DrawGrid()
     DrawWorld()
+    DrawText(f'Level - {level}',font,WHITE,10,SCREEN_HEIGHT + LOWER_MARGIN // 2)
+    DrawText(f'Press UP or DOWN to change level',font,WHITE, 0.4 * SCREEN_WIDTH ,SCREEN_HEIGHT + LOWER_MARGIN // 2)
+    # save and load data
+    if saveButton.Draw(screen):
+        # save level data
+        with open(f'level{level}_data.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter = ',')
+            for row in worldData:
+                writer.writerow(row)
+    if loadButton.Draw(screen):
+        # load in level data
+        # reset scrol lback to teh start of the level
+        scroll = 0
+        with open(f'level{level}_data.csv', newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter = ',')
+            for x,row in enumerate(reader):
+                for y, tile in enumerate(row):
+                    worldData[x][y] = int(tile)
     # Draw panel area
-    pygame.draw.rect(screen, ORANGE, (SCREEN_WIDTH, 0, SIDE_MARGIN, SCREEN_HEIGHT+LOWER_MARGIN))
+    pygame.draw.rect(screen, LIGHTDARK, (SCREEN_WIDTH, 0, SIDE_MARGIN, SCREEN_HEIGHT+LOWER_MARGIN))
     # Draw buttons with my tiles:
     # choose a tile
     buttonCount = 0
@@ -160,7 +198,7 @@ while run:
             currentTile = buttonCount
     #print(currentTile)
     # highlight the selected tile
-    pygame.draw.rect(screen, RED, buttonList[currentTile].rect, 3)
+    pygame.draw.rect(screen, WHITE, buttonList[currentTile].rect, 3)
     pygame.display.update()
     clock.tick(FPS)
 pygame.quit()
