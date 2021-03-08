@@ -3,8 +3,8 @@ from Generator.button import *
 pygame.init()
 
 #gamewindow
-SCREN_WIDTH = 800
-SCREN_HEIGHT = 640
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 640
 LOWER_MARGIN = 100
 SIDE_MARGIN = 300
 FPS = 60
@@ -12,7 +12,7 @@ clock = pygame.time.Clock()
 
 currentTile = 0
 TILESIZE = 32
-ROWS = (SCREN_WIDTH - LOWER_MARGIN) // TILESIZE
+ROWS = (SCREEN_WIDTH - LOWER_MARGIN) // TILESIZE
 COLS = 150
 GROUNDTILETYPES = 9
 # define game variables
@@ -21,7 +21,7 @@ scrollRight = False
 scroll = 0
 scrollSpeed = 1
 
-screen = pygame.display.set_mode([SCREN_WIDTH + SIDE_MARGIN,SCREN_HEIGHT + LOWER_MARGIN])
+screen = pygame.display.set_mode([SCREEN_WIDTH + SIDE_MARGIN,SCREEN_HEIGHT + LOWER_MARGIN])
 pygame.display.set_caption("TANK Level Editor")
 
 
@@ -46,16 +46,29 @@ for i in range(GROUNDTILETYPES):
 imgList.append(pygame.image.load('Assets/platform.png'))
 
 
-#define colours
+# define colours
 GREEN = (144,201,120)
 WHITE = (255,255,255)
 RED = (200,25,25)
+ORANGE = (255,183,74)
+
+# create empty tile list
+worldData = []
+for row in range(ROWS):
+    r = [-1] * COLS
+    worldData.append(r)
+
+# create bottom border:
+for tile in range(0,COLS):
+    worldData[ROWS - 1][tile] = 0
+    
+print(worldData)
 
 # function for drawing background:
 def DrawBackground():
     screen.fill(GREEN)
-    widthG1 = g1_img.get_width()
-    screen.blit(g1_img,((widthG1 + 128) - scroll * 0.5,0))
+    #widthG1 = g1_img.get_width()
+    #screen.blit(g1_img,((widthG1 + 128) - scroll * 0.5,0))
     """
     widthG1 = g1_img.get_width()
     widthG2 = g2_img.get_width()
@@ -68,17 +81,26 @@ def DrawBackground():
 def DrawGrid():
     # vertical
     for i in range(COLS + 1):
-        pygame.draw.line(screen, WHITE, (i * TILESIZE - scroll,0),(i * TILESIZE - scroll,SCREN_HEIGHT))
+        pygame.draw.line(screen, WHITE, (i * TILESIZE - scroll,0),(i * TILESIZE - scroll,SCREEN_HEIGHT))
     # horizontal
     for i in range(ROWS):
-        pygame.draw.line(screen, WHITE, (0,i * TILESIZE),(SCREN_WIDTH,i * TILESIZE))
+        pygame.draw.line(screen, WHITE, (0,i * TILESIZE),(SCREEN_WIDTH,i * TILESIZE))
+# function for drawing world tiles
+def DrawWorld():
+    for y, row in enumerate(worldData):
+        for x,tile in enumerate(row):
+            if tile >= 0:
+                #screen.blit(imgList[tile],(x * TILESIZE - scroll,y * tile))
+                screen.blit(imgList[tile],(x * TILESIZE - scroll,y * TILESIZE))
+                #screen.blit(imgList[tile],(x * TILESIZE - scroll,SCREEN_HEIGHT - TILESIZE))
+                
 
 # create buttons
 buttonList = []
 buttonCol = 0
 buttonRow = 0
 for i in range(len(imgList)):
-    tileButton = Button(SCREN_WIDTH + (75 * buttonCol) + 50, 75 * buttonRow + 50, imgList[i],1)
+    tileButton = Button(SCREEN_WIDTH + (75 * buttonCol) + 50, 75 * buttonRow + 50, imgList[i],1)
     buttonList.append(tileButton)
     buttonCol += 1
     if buttonCol == 3:
@@ -92,6 +114,21 @@ while run:
         scroll -= 5 * scrollSpeed
     if scrollRight == True:
         scroll += 5 * scrollSpeed
+
+    # add new tiles to the screen
+    # get mouse position
+    pos = pygame.mouse.get_pos()
+    x = (pos[0] + scroll) // TILESIZE
+    y = pos[1] // TILESIZE
+    
+    # check that the coordinates are within the tile area
+    if pos[0] < SCREEN_WIDTH and pos[1] < SCREEN_HEIGHT:
+        # update tile value
+        if pygame.mouse.get_pressed()[0] == 1:
+            if worldData[y][x] != currentTile:
+                worldData[y][x] = currentTile
+    #print(x)
+    #print(y)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -112,18 +149,18 @@ while run:
                 scrollSpeed = 1
     DrawBackground()
     DrawGrid()
+    DrawWorld()
     # Draw panel area
-    pygame.draw.rect(screen, GREEN, (SCREN_WIDTH, 0, SIDE_MARGIN, SCREN_HEIGHT))
+    pygame.draw.rect(screen, ORANGE, (SCREEN_WIDTH, 0, SIDE_MARGIN, SCREEN_HEIGHT+LOWER_MARGIN))
     # Draw buttons with my tiles:
     # choose a tile
     buttonCount = 0
     for buttonCount,i in enumerate(buttonList):
         if i.Draw(screen):
             currentTile = buttonCount
-    print(currentTile)
+    #print(currentTile)
     # highlight the selected tile
     pygame.draw.rect(screen, RED, buttonList[currentTile].rect, 3)
-    
     pygame.display.update()
     clock.tick(FPS)
 pygame.quit()
