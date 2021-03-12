@@ -2,6 +2,7 @@
 from State.GameStates.menu import *
 from State.GameStates.endstate import *
 from State.GameStates.gamestate import *
+from State.Generator.gameEditor import  *
 from Entity.entity import *
 from Entity.player import *
 
@@ -25,11 +26,15 @@ class Game():
         self.BLACK = (0,0,0)
         self.WHITE = (255,255,255)
         self.RED = (255,0,0)
+        self.BLUE = (0,0,255)
+        self.ORANGE = (255,183,74)
+        self.LIGHTDARK = (52,52,52)
         self.gameState = GameState(self)
         self.mainMenu = MainMenu(self)
         self.options = OptionsMenu(self)
         self.credits = CreditsMenu(self)
         self.endState = EndState(self)
+        self.gameEditorState = GameEditor(self)
         self.stateGroup = []
         self.currentState = self.endState
     def InitGameSettings(self):
@@ -88,3 +93,4 @@ class Game():
         while self.start:
             self.Update()
             self.Render()
+            self.clock.tick(self.FPS)

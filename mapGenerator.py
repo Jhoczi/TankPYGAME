@@ -1,5 +1,5 @@
 ﻿import pygame
-from Generator.button import *
+from State.Generator.button import *
 import csv
 pygame.init()
 
@@ -48,7 +48,6 @@ for i in range(GROUNDTILETYPES):
     img = pygame.image.load(f'Assets/ground{i+1}.png')
     imgList.append(img)
 imgList.append(pygame.image.load('Assets/platform.png'))
-
 
 # define colours
 GREEN = (144,201,120)

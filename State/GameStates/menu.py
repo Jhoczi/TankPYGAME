@@ -49,8 +49,10 @@ class MainMenu(Menu):
         self.start_Y = self.mid_h
         self.options_X = self.mid_w
         self.options_Y = self.mid_h + 50
+        self.gameEditor_X = self.mid_w
+        self.gameEditor_Y = self.mid_h + 100
         self.credits_X = self.mid_w
-        self.credits_Y = self.mid_h + 100
+        self.credits_Y = self.mid_h + 150
         self.cursor_rect.midtop = (self.start_X + self.offset, self.start_Y)
     def MoveCursor(self):
         if self.game.DOWN_KEY:
@@ -58,6 +60,9 @@ class MainMenu(Menu):
                 self.cursor_rect.midtop = (self.options_X + self.offset, self.options_Y)
                 self.state = 'Options'
             elif self.state == 'Options':
+                self.cursor_rect.midtop = (self.gameEditor_X + self.offset, self.gameEditor_Y)
+                self.state = 'GameEditor'
+            elif self.state == 'GameEditor':
                 self.cursor_rect.midtop = (self.credits_X + self.offset, self.credits_Y)
                 self.state = 'Credits'
             elif self.state == 'Credits':
@@ -70,9 +75,12 @@ class MainMenu(Menu):
             elif self.state == 'Options':
                 self.cursor_rect.midtop = (self.start_X + self.offset, self.start_Y)
                 self.state = 'Start'
-            elif self.state == 'Credits':
+            elif self.state == 'GameEditor':
                 self.cursor_rect.midtop = (self.options_X + self.offset, self.options_Y)
                 self.state = 'Options'
+            elif self.state == 'Credits':
+                self.cursor_rect.midtop = (self.gameEditor_X + self.offset, self.gameEditor_Y)
+                self.state = 'GameEditor'
     def CheckInput(self):
         if self.game.START_KEY:
             if self.state == 'Start':
@@ -83,7 +91,9 @@ class MainMenu(Menu):
                 print('odpalam opcje')
                 self.game.AddState(self.game.options)
                 self.runDisplay = False
-                #self.game.ChangeState()
+            elif self.state == 'GameEditor':
+                self.game.AddState(self.game.gameEditorState)
+                self.runDisplay = False
             elif self.state == 'Credits':
                 self.game.AddState(self.game.credits)
                 self.runDisplay = False
@@ -97,6 +107,7 @@ class MainMenu(Menu):
         self.game.DrawText('Main Menu', 48, self.mid_w, self.mid_h - 100)
         self.game.DrawText('Start Game', 38, self.mid_w, self.start_Y)
         self.game.DrawText('Options', 38, self.mid_w, self.options_Y)
+        self.game.DrawText('Game Editor', 38, self.mid_w, self.gameEditor_Y)
         self.game.DrawText('Credits', 38, self.mid_w, self.credits_Y)
         self.DrawCursor()
         self.BlitScreen()

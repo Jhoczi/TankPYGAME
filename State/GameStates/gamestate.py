@@ -1,13 +1,12 @@
 ﻿from State.state import *
 from Entity.player import *
-from Generator.tile import *
+
 class GameState(State):
     def __init__(self,game):
         super().__init__(game)
         self.playerSpriteSRC = 'Assets/tank1_32x32.png'
         self.bitMapSRC = 'Assets/tankbitmap.png'
         self.player = Player(self.playerSpriteSRC,self.game)
-        self.bitmap = Tile(self.bitMapSRC,10,10)
     def BlitScreen(self):
         self.game.window.blit(self.game.display, (0, 0))
         pygame.display.update()
@@ -41,7 +40,7 @@ class GameState(State):
     def RenderState(self):
         self.game.display.fill(self.game.RED)
         self.game.display.blit(self.player.entityImage,(self.player.positionX,self.player.positionY))
-        self.bitmap.Draw(self.game.display)
+        #self.bitmap.Draw(self.game.display)
         self.BlitScreen()
     def DisplayState(self):
         self.runDisplay = True
