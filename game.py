@@ -11,6 +11,8 @@ class Game():
         pygame.init()
         self.FPS = 30
         self.clock = pygame.time.Clock()
+        #self.DISPLAY_WIDTH = 1920
+        #self.DISPLAY_HEIGHT = 1080
         self.DISPLAY_WIDTH = 800
         self.DISPLAY_HEIGHT = 640
         self.start = True
